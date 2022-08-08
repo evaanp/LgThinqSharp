@@ -18,7 +18,7 @@ namespace EP94.ThinqSharp.Clients
 
         }
 
-        public Task SetSnapshotValue<T>(Expression<Func<AcSnapshot, T>> propertyLambda, T value) => base.SetSnapshotValue<AcSnapshot, T>(propertyLambda, value);
+        public Task SetSnapshotValue<T>(Expression<Func<AcSnapshot, T>> propertyLambda, T value) => SetSnapshotValue<AcSnapshot, T>(propertyLambda, value);
 
         /// <summary>
         /// Turn the ac on or off

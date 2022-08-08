@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EP94.ThinqSharp", "EP94.Thi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Runner", "Runner\Runner.csproj", "{06F943F1-7475-43CB-A3DA-B9CE2E58A775}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EP94.EasyMqtt", "..\Libraries\EP94.EasyMqtt\EP94.EasyMqtt\EP94.EasyMqtt.csproj", "{B655B7E5-6A04-4721-B969-7C3A357C2C7E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{06F943F1-7475-43CB-A3DA-B9CE2E58A775}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06F943F1-7475-43CB-A3DA-B9CE2E58A775}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06F943F1-7475-43CB-A3DA-B9CE2E58A775}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B655B7E5-6A04-4721-B969-7C3A357C2C7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B655B7E5-6A04-4721-B969-7C3A357C2C7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B655B7E5-6A04-4721-B969-7C3A357C2C7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B655B7E5-6A04-4721-B969-7C3A357C2C7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\EP94.EasyMqtt\EP94.EasyMqtt\EP94.EasyMqtt.csproj" />
     <ProjectReference Include="..\EP94.ThinqSharp\EP94.ThinqSharp.csproj" />
   </ItemGroup>
 

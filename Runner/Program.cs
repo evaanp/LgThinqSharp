@@ -13,7 +13,7 @@ Log.Logger = new LoggerConfiguration()
 ThinqClient thinqClient;
 string passportFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Passport.json");
 
-// A passport can be used to fasten the login proces
+// A passport can be used to speed up the login process
 // In this example the passport is saved in a json file
 if (!File.Exists(passportFilePath))
 {

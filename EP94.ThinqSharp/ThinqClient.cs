@@ -24,7 +24,7 @@ namespace EP94.ThinqSharp
         private bool _disposed;
 
         /// <summary>
-        /// The constructor to provide the passport to the client, this will fasten the login process.
+        /// The constructor to provide the passport to the client, this will speed up the login process.
         /// </summary>
         /// <param name="passport"></param>
         /// <param name="loggerFactory"></param>
