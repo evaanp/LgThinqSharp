@@ -1,8 +1,8 @@
 # EP94.ThinqSharp
  Library to connect and interact with LG devices through the thinq api. For now the only supported device is the airconditioner, as I don't own any other LG devices.
 
-<img src="https://img.shields.io/nuget/v/EP94.ThinqSharp"
-     alt="Nuget"/>
+
+[![NuGet version (EP94.ThinqSharp)](https://img.shields.io/nuget/v/EP94.ThinqSharp)](https://www.nuget.org/packages/EP94.ThinqSharp/)
 
 Code example:
 
