@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\EP94.EasyMqtt\EP94.EasyMqtt\EP94.EasyMqtt.csproj" />
+    <ProjectReference Include="..\EP94.ThinqSharp\EP94.ThinqSharp.csproj" />
+  </ItemGroup>
+
+</Project>
