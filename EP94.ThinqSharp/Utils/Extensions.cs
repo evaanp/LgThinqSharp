@@ -33,18 +33,6 @@ namespace EP94.ThinqSharp.Utils
             return arg.GetType().GetProperties().ToDictionary(property => GetPropertyName(property), property => property.GetValue(arg)?.ToString());
         }
 
-        public static Dictionary<string, string?> ToUrlEncodedDictionary(this object? arg)
-        {
-            if (arg is null)
-            {
-                return new Dictionary<string, string?>();
-            }
-            //throw new NotImplementedException();
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
-            return (Dictionary<string, string?>)arg.GetType().GetProperties().ToDictionary(property => GetPropertyName(property), property => Uri.EscapeDataString(property.GetValue(arg)?.ToString() ?? String.Empty));
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
-        }
-
         public static X509Certificate2 CopyWithPrivateKey(this X509Certificate2 certificate, AsymmetricKeyParameter privateKey)
         {
             RSA rsa;
