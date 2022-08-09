@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace EP94.ThinqSharp.Models.Requests
 {
@@ -26,6 +27,8 @@ namespace EP94.ThinqSharp.Models.Requests
                 {
                     throw new ThinqApiException("Failed getting oauth token");
                 }
+                // The backendurl gets returned as urlencoded value
+                oAuthToken.OAuth2BackendUrl = HttpUtility.UrlDecode(oAuthToken.OAuth2BackendUrl);
                 oAuthToken.LastRefresh = DateTime.UtcNow;
                 return oAuthToken;
             }
