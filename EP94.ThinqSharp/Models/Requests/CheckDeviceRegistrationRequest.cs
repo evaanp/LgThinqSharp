@@ -1,12 +1,5 @@
-﻿using EP94.ThinqSharp.Config;
-using EP94.ThinqSharp.Exceptions;
+﻿using EP94.ThinqSharp.Exceptions;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EP94.ThinqSharp.Models.Requests
 {
@@ -27,7 +20,7 @@ namespace EP94.ThinqSharp.Models.Requests
                 Logger.LogDebug("Device already registered");
                 return true;
             }
-            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
+            catch (ThinqApiException e) when (e.ErrorCode == (int)ThinqResponseCodes.NOT_EXIST_DATA)
             {
                 Logger.LogDebug("Device is not yet registered");
                 return false;

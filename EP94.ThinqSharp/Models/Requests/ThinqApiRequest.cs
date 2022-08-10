@@ -1,12 +1,6 @@
-﻿using EP94.ThinqSharp.Config;
-using EP94.ThinqSharp.Exceptions;
+﻿using EP94.ThinqSharp.Exceptions;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace EP94.ThinqSharp.Models.Requests
 {
@@ -40,7 +34,7 @@ namespace EP94.ThinqSharp.Models.Requests
             {
                 await RefreshOAuthToken(_passport);
             }
-            ThinqApiResponse<TResult>? response = await ExecuteRequestWithResponseAsync();
+            ThinqApiResponse<TResult>? response = await ExecuteRequestWithResponseAsync(false);
             if (response is null)
             {
                 throw new ThinqApiException("Request received empty response");
@@ -48,16 +42,16 @@ namespace EP94.ThinqSharp.Models.Requests
             Logger.LogDebug("Received result code {ResultCode}", response.ResultCode);
             switch (response.ResultCode)
             {
-                case ErrorCodes.OK:
+                case (int)ThinqResponseCodes.OK:
                     return response.Result;
 
-                case ErrorCodes.EMP_AUTHENTICATION_FAILED when !failWhenAuthenticationFailed && _passport is not null:
-                    Logger.LogInformation("Received {CodeName} result code", nameof(ErrorCodes.EMP_AUTHENTICATION_FAILED));
+                case (int)ThinqResponseCodes.EMP_AUTHENTICATION_FAILED when !failWhenAuthenticationFailed && _passport is not null:
+                    Logger.LogInformation("Received {CodeName} result code", nameof(ThinqResponseCodes.EMP_AUTHENTICATION_FAILED));
                     await RefreshOAuthToken(_passport);
                     return await InternalExecuteThinqApiRequestWithResponseAsync(true);
 
                 default:
-                    throw new ThinqApiException($"Received error code {response.ResultCode}", response.ResultCode);
+                    throw new ThinqApiException($"Received error {(ThinqResponseCodes)response.ResultCode} code {response.ResultCode}", response.ResultCode);
             }
         }
 

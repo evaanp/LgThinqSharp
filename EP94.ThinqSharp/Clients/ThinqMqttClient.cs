@@ -1,23 +1,16 @@
-﻿using EP94.ThinqSharp.Config;
-using EP94.ThinqSharp.Interfaces;
+﻿using EP94.ThinqSharp.Interfaces;
 using EP94.ThinqSharp.Models;
 using EP94.ThinqSharp.Models.Requests;
 using EP94.ThinqSharp.Utils;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Exceptions;
 using MQTTnet.Packets;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace EP94.ThinqSharp.Clients
 {

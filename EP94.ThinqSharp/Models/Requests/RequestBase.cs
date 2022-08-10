@@ -34,14 +34,17 @@ namespace EP94.ThinqSharp.Models.Requests
         /// </summary>
         /// <returns></returns>
         /// <exception cref="HttpRequestException">When the request fails or the statuscode is not success this exception is thrown</exception>
-        protected async Task ExecuteRequestAsync()
+        protected async Task ExecuteRequestAsync(bool throwOnNonSuccessStatusCode = true)
         {
             HttpResponseMessage response = await RequestInternalAsync();
             using HttpContent content = response.Content;
             string stringContent = await content.ReadAsStringAsync();
             try
             {
-                response.EnsureSuccessStatusCode();
+                if (throwOnNonSuccessStatusCode)
+                {
+                    response.EnsureSuccessStatusCode();
+                }
             }
             catch (HttpRequestException e)
             {
@@ -66,8 +69,6 @@ namespace EP94.ThinqSharp.Models.Requests
                     HttpContent httpContent = RequestType switch
                     {
                         RequestType.UrlEncoded => new FormUrlEncodedContent(Body.ToDictionary()),
-                        //RequestType.UrlEncoded => FormUrlEncodedContent(Body),
-                        //RequestType.UrlEncoded => FormUrlEncodedContent(Body),
                         RequestType.Json => new StringContent(JsonConvert.SerializeObject(Body), null, "application/json"),
                         _ => throw new NotSupportedException(RequestType.ToString())
                     };
@@ -79,10 +80,6 @@ namespace EP94.ThinqSharp.Models.Requests
                 else
                 {
                     httpRequestMessage = new HttpRequestMessage(HttpMethod, Url);
-                    if (RequestType == RequestType.UrlEncoded)
-                    {
-
-                    }
                 }
 
                 if (Headers is not null)
@@ -120,14 +117,17 @@ namespace EP94.ThinqSharp.Models.Requests
         /// </summary>
         /// <returns></returns>
         /// <exception cref="HttpRequestException">When the request fails or the statuscode is not success this exception is thrown</exception>
-        protected async Task<TReturn?> ExecuteRequestWithResponseAsync()
+        protected async Task<TReturn?> ExecuteRequestWithResponseAsync(bool throwOnNonSuccessStatusCode = true)
         {
             using HttpResponseMessage response = await RequestInternalAsync();
             using HttpContent content = response.Content;
             string stringContent = await content.ReadAsStringAsync();
             try
             {
-                response.EnsureSuccessStatusCode();
+                if (throwOnNonSuccessStatusCode)
+                {
+                    response.EnsureSuccessStatusCode();
+                }
             }
             catch (HttpRequestException e)
             {
