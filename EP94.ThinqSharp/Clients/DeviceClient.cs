@@ -49,14 +49,47 @@ namespace EP94.ThinqSharp.Clients
             DeviceInfo deviceInfo = await getDeviceInfoRequest.GetDeviceInfoAsync(false);
             DeviceSnapshot.Merge(deviceInfo.Snapshot);
         }
-
-        protected async Task SetSnapshotValue<TSnapshot, T>(Expression<Func<TSnapshot, T>> propertyLambda, T value)
+        /// <summary>
+        /// Send a value to the device
+        /// </summary>
+        /// <typeparam name="TSnapshot"></typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="propertyLambda">The expression to define which value has to be set</param>
+        /// <param name="value">The value</param>
+        /// <param name="forceSend">Normally the value only gets send when the current value is not equal to the requested value. When forceSend is true, the value always gets send</param>
+        /// <returns></returns>
+        protected async Task SetSnapshotValue<TSnapshot, T>(Expression<Func<TSnapshot, T>> propertyLambda, T value, bool forceSend = false)
         {
             ArgumentNullException.ThrowIfNull(value, nameof(value));
             PropertyInfo propertyInfo = GetPropertyInfo(propertyLambda);
             JsonPropertyAttribute? jsonPropertyAttribute = propertyInfo.GetCustomAttribute<JsonPropertyAttribute>();
             string name = jsonPropertyAttribute?.PropertyName ?? propertyInfo.Name;
-            await SendCommand(name.Contains("operation") ? "Operation" : "Set", name, value);
+            if (forceSend || !Equals(value, propertyLambda.Compile()((TSnapshot)DeviceSnapshot)))
+            {
+                await SendCommand(name.Contains("operation") ? "Operation" : "Set", name, value);
+            }
+            else
+            {
+                Logger.LogDebug("Not sending value {value} to {Name}, because the current value is the same", value, name);
+            }
+        }
+
+        /// <summary>
+        /// Send multiple values to the device
+        /// </summary>
+        /// <typeparam name="TSnapshot"></typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="propertyLambda">The expression to define which value has to be set</param>
+        /// <param name="value">The value</param>
+        /// <param name="forceSend">Normally the value only gets send when the current value is not equal to the requested value. When forceSend is true, the value always gets send</param>
+        /// <returns></returns>
+        protected async Task SetSnapshotValues<TSnapshot, T>(params (Expression<Func<TSnapshot, T>> propertyLambda, T value, bool forceSend)[] values)
+        {
+            foreach (var value in values)
+            {
+                await SetSnapshotValue(value.propertyLambda, value.value, value.forceSend);
+                await Task.Delay(100);
+            }
         }
 
         private PropertyInfo GetPropertyInfo<TSource, TProperty>(Expression<Func<TSource, TProperty>> propertyLambda)
