@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EP94.ThinqSharp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -9,7 +10,7 @@ namespace EP94.ThinqSharp.Exceptions
 {
     public class ThinqApiException : Exception
     {
-        public int ErrorCode { get; set; }
+        public ThinqResponseCode ErrorCode { get; set; }
         public ThinqApiException()
         {
         }
@@ -18,7 +19,7 @@ namespace EP94.ThinqSharp.Exceptions
         {
         }
 
-        public ThinqApiException(string? message, int errorCode) : base(message)
+        public ThinqApiException(string? message, ThinqResponseCode errorCode) : base(message)
         {
             ErrorCode = errorCode;
         }

@@ -21,7 +21,7 @@ namespace EP94.ThinqSharp.Models.Requests
             Logger.LogDebug("Executing get user profile request");
             try
             {
-                UserProfileResponse? userProfileResponse = await ExecuteRequestWithResponseAsync();
+                UserProfileResponse? userProfileResponse = await ExecuteOAuthRequest();
                 if (userProfileResponse is null)
                 {
                     throw new ThinqApiException("Failed getting user profile response");

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EP94.ThinqSharp.Models.Requests
 {
-    internal record ThinqApiResponse<T>(int ResultCode, T Result)
+    internal record ThinqApiResponse<T>(ThinqResponseCode ResultCode, T Result)
     {
     }
 }

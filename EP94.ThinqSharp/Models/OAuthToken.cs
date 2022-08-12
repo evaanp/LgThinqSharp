@@ -26,7 +26,7 @@ namespace EP94.ThinqSharp
         {
             if (int.TryParse(ExpiresIn, out int expiresIn))
             {
-                return DateTime.UtcNow - LastRefresh > TimeSpan.FromMinutes(expiresIn);
+                return DateTime.UtcNow - LastRefresh > TimeSpan.FromSeconds(expiresIn);
             }
             return true;
         }

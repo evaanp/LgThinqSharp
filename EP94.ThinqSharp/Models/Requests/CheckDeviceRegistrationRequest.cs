@@ -20,7 +20,7 @@ namespace EP94.ThinqSharp.Models.Requests
                 Logger.LogDebug("Device already registered");
                 return true;
             }
-            catch (ThinqApiException e) when (e.ErrorCode == (int)ThinqResponseCodes.NOT_EXIST_DATA)
+            catch (ThinqApiException e) when (e.ErrorCode == ThinqResponseCode.NOT_EXIST_DATA)
             {
                 Logger.LogDebug("Device is not yet registered");
                 return false;

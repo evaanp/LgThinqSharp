@@ -18,7 +18,6 @@ namespace EP94.ThinqSharp.Clients
     internal class ThinqMqttClient : IDisposable
     {
         public StateChanged? OnStateChanged;
-        public EventHandler<AcSnapshot>? OnSnapshotReceived;
         public ThinqMqttClientState State
         {
             get => _state;
@@ -34,23 +33,23 @@ namespace EP94.ThinqSharp.Clients
         }
         private ThinqMqttClientState _state = ThinqMqttClientState.NotConnected;
 
-        private Passport _passport;
-        private Route _route;
-        private Gateway _gateway;
-        private ILogger _logger;
-        private ILoggerFactory _loggerFactory;
+        private readonly Passport _passport;
+        private readonly Route _route;
+        private readonly Gateway _gateway;
+        private readonly ILogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
         private bool _disposed;
         private X509Certificate2? _certificate;
-        private Uri _brokerUri;
+        private readonly Uri _brokerUri;
         private IMqttClient? _client;
         private IEnumerable<string>? _topics;
         private MqttClientOptions? _options;
 
-        private SemaphoreSlim _reconnectSemaphore;
+        private readonly SemaphoreSlim _reconnectSemaphore;
         private volatile bool _disconnectRequested;
         private int _reconnectTimeout = 1;
-        private string _clientId;
-        private Dictionary<string, ISnapshot> _attachedSnapshots;
+        private readonly string _clientId;
+        private readonly Dictionary<string, ISnapshot> _attachedSnapshots;
 
         public ThinqMqttClient(Passport passport, Route route, Gateway gateway, ILoggerFactory loggerFactory, string clientId)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EP94.ThinqSharp.Models
 {
-    internal enum ThinqResponseCodes
+    public enum ThinqResponseCode
     {
         OK = 0000,
         PARTIAL_OK = 0001,

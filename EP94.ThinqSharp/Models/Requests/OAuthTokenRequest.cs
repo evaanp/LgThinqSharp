@@ -12,7 +12,6 @@ namespace EP94.ThinqSharp.Models.Requests
 {
     internal class OAuthTokenRequest : OAuthRequest<OAuthToken>
     {
-        private const string _relativeUrl = "/oauth/1.0/oauth2/token";
         public OAuthTokenRequest(ILogger logger, string backendUrl, Dictionary<string, string> queryParams)
             : base(HttpMethod.Post, logger, $"{backendUrl}oauth/1.0/oauth2/token", queryParams)
         {
@@ -20,7 +19,7 @@ namespace EP94.ThinqSharp.Models.Requests
 
         public async Task<OAuthToken?> DoGetOAuthToken()
         {
-            return await ExecuteRequestWithResponseAsync();
+            return await ExecuteOAuthRequest();
         }
     }
 }

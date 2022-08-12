@@ -26,7 +26,7 @@ namespace EP94.ThinqSharp.Models.Requests
         /// <exception cref="ThinqApiException"></exception>
         public async Task RefreshOAuthToken(bool silent)
         {
-            Logger.LogDebug("Executing oauth token request");
+            Logger.LogDebug("Executing refresh oauth token request");
             try
             {
                 OAuthToken? oAuthToken = await DoGetOAuthToken();
@@ -35,6 +35,7 @@ namespace EP94.ThinqSharp.Models.Requests
                     throw new ThinqApiException("Failed refreshing oauth token");
                 }
                 _token.Update(oAuthToken);
+                Logger.LogDebug("OAuth token refresh successful");
             }
             catch (Exception e)
             {

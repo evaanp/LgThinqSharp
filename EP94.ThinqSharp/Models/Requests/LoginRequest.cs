@@ -5,10 +5,14 @@ namespace EP94.ThinqSharp.Models.Requests
 {
     internal class LoginRequest : RequestBase<LoginResponse>
     {
+        private Dictionary<string, string> _body;
+        private Dictionary<string, string> _headers;
         public LoginRequest(ILoggerFactory loggerFactory, Gateway gateway, PreLoginResult preLoginResult, string username)
-            : base(HttpMethod.Post, $"{gateway.EmpTermsUri}/emp/v2.0/account/session/{GetUrlEncodedUsername(username)}", RequestType.UrlEncoded, loggerFactory.CreateLogger<LoginRequest>(), GetBody(preLoginResult), GetHeaders(preLoginResult, gateway))
+            : base(HttpMethod.Post, $"{gateway.EmpTermsUri}/emp/v2.0/account/session/{GetUrlEncodedUsername(username)}", RequestType.UrlEncoded, loggerFactory.CreateLogger<LoginRequest>())
 
         {
+            _body = GetBody(preLoginResult);
+            _headers = GetHeaders(preLoginResult, gateway);
         }
 
         private static string GetUrlEncodedUsername(string username)
@@ -21,7 +25,7 @@ namespace EP94.ThinqSharp.Models.Requests
             Logger.LogDebug("Executing login request");
             try
             {
-                LoginResponse? loginResponse = await ExecuteRequestWithResponseAsync();
+                LoginResponse? loginResponse = await ExecuteRequestWithResponseAsync(_body, _headers);
                 if (loginResponse is null)
                 {
                     throw new ThinqApiException("Failed to get the account response");

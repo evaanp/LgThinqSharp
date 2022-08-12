@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,10 +15,13 @@ namespace EP94.ThinqSharp.Models.Requests
 {
     internal class AuthorizeEmpRequest : RequestBase<AuthorizeEmpResponse>
     {
+        private Account _account;
+        private string _oauthSecret;
         public AuthorizeEmpRequest(ILoggerFactory loggerFactory, Account account, string oauthSecret)
-            : base(HttpMethod.Get, $"https://emp-oauth.lgecloud.com/emp/oauth2/authorize/empsession?{GetUrlEncodedParametersString(account)}", RequestType.UrlEncoded, loggerFactory.CreateLogger<AuthorizeEmpRequest>(), null, GetHeaders(account, oauthSecret))
+            : base(HttpMethod.Get, $"https://emp-oauth.lgecloud.com/emp/oauth2/authorize/empsession?{GetUrlEncodedParametersString(account)}", RequestType.UrlEncoded, loggerFactory.CreateLogger<AuthorizeEmpRequest>())
         {
-
+            _account = account;
+            _oauthSecret = oauthSecret;
         }
 
         public async Task<AuthorizeEmpResponse> AuthorizeEmp(bool silent)
@@ -25,7 +29,7 @@ namespace EP94.ThinqSharp.Models.Requests
             Logger.LogDebug("Executing authorize emp request");
             try
             {
-                AuthorizeEmpResponse? response = await ExecuteRequestWithResponseAsync();
+                AuthorizeEmpResponse? response = await ExecuteRequestWithResponseAsync(null, GetHeaders(_account, _oauthSecret));
                 if (response is null)
                 {
                     throw new ThinqApiException("Failed to get authorize emp response");

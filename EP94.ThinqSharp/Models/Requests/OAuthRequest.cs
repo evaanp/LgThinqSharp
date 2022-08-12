@@ -11,9 +11,19 @@ namespace EP94.ThinqSharp.Models.Requests
 {
     internal class OAuthRequest<TReturn> : RequestBase<TReturn>
     {
+        private Dictionary<string, string> _queryParams;
+        private Dictionary<string, string> _headers;
+
         public OAuthRequest(HttpMethod httpMethod, ILogger logger, string url, Dictionary<string, string> queryParams, Dictionary<string, string>? extraHeaders = null)
-            : base(httpMethod, $"{url}?{GetUrlEncodedParamsString(queryParams)}", RequestType.UrlEncoded, logger, queryParams, GetHeaders(url, queryParams, extraHeaders))
+            : base(httpMethod, $"{url}?{GetUrlEncodedParamsString(queryParams)}", RequestType.UrlEncoded, logger)
         {
+            _queryParams = queryParams;
+            _headers = GetHeaders(url, queryParams, extraHeaders);
+        }
+
+        public Task<TReturn?> ExecuteOAuthRequest()
+        {
+            return ExecuteRequestWithResponseAsync(_queryParams, _headers);
         }
 
         private static string GetUrlEncodedParamsString(Dictionary<string, string> queryParams)

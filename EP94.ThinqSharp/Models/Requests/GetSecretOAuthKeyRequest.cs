@@ -11,7 +11,7 @@ namespace EP94.ThinqSharp.Models.Requests
     internal class GetSecretOAuthKeyRequest : RequestBase<SecretOAuthKeyResponse>
     {
         public GetSecretOAuthKeyRequest(Gateway gateway, ILoggerFactory loggerFactory)
-            : base (HttpMethod.Get, $"{gateway.EmpSpxUri}/searchKey?key_name=OAUTH_SECRETKEY&sever_type=OP", RequestType.UrlEncoded, loggerFactory.CreateLogger<GetSecretOAuthKeyRequest>(), null, null)
+            : base (HttpMethod.Get, $"{gateway.EmpSpxUri}/searchKey?key_name=OAUTH_SECRETKEY&sever_type=OP", RequestType.UrlEncoded, loggerFactory.CreateLogger<GetSecretOAuthKeyRequest>())
         {
 
         }
@@ -21,7 +21,7 @@ namespace EP94.ThinqSharp.Models.Requests
             Logger.LogDebug("Getting secret oauth key");
             try
             {
-                SecretOAuthKeyResponse? response = await ExecuteRequestWithResponseAsync();
+                SecretOAuthKeyResponse? response = await ExecuteRequestWithResponseAsync(null, null);
                 Logger.LogDebug("Getting secret oauth key succeeded");
                 if (response is null)
                 {

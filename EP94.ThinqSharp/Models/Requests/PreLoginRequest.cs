@@ -1,20 +1,15 @@
 ﻿using EP94.ThinqSharp.Exceptions;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EP94.ThinqSharp.Exceptions;
 
 namespace EP94.ThinqSharp.Models.Requests
 {
     internal class PreLoginRequest : RequestBase<PreLoginResult>
     {
+        private Dictionary<string, string> _body;
         public PreLoginRequest(ILoggerFactory loggerFactory, Gateway gateway, string username, string encryptedPassword)
-            : base(HttpMethod.Post, $"{gateway.EmpSpxUri}/preLogin", RequestType.UrlEncoded, loggerFactory.CreateLogger<PreLoginRequest>(), GetBody(username, encryptedPassword), null)
+            : base(HttpMethod.Post, $"{gateway.EmpSpxUri}/preLogin", RequestType.UrlEncoded, loggerFactory.CreateLogger<PreLoginRequest>())
         {
-
+            _body = GetBody(username, encryptedPassword);
         }
 
         /// <summary>
@@ -29,7 +24,7 @@ namespace EP94.ThinqSharp.Models.Requests
             Logger.LogDebug("Getting prelogin result");
             try
             {
-                PreLoginResult? preLoginResult = await ExecuteRequestWithResponseAsync();
+                PreLoginResult? preLoginResult = await ExecuteRequestWithResponseAsync(_body, null);
                 if (preLoginResult is null)
                 {
                     throw new ThinqApiException("Failed to convert the response to a PreLoginResult instance");

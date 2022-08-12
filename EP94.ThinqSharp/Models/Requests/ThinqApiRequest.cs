@@ -1,5 +1,6 @@
 ﻿using EP94.ThinqSharp.Exceptions;
 using Microsoft.Extensions.Logging;
+using System.Reflection.PortableExecutable;
 using System.Text.RegularExpressions;
 
 namespace EP94.ThinqSharp.Models.Requests
@@ -8,12 +9,18 @@ namespace EP94.ThinqSharp.Models.Requests
     {
         private ILoggerFactory _loggerFactory;
         private Passport? _passport;
+        private object? _body;
+        private Dictionary<string, string>? _extraHeaders;
+        private string _clientId;
 
         protected ThinqApiRequest(string clientId, Passport? passport, HttpMethod httpMethod, string url, RequestType requestType, ILogger logger, ILoggerFactory loggerFactory, object? body = null, Dictionary<string, string>? headers = null)
-            : base(httpMethod, url, requestType, logger, body, GetHeaders(clientId, passport, headers))
+            : base(httpMethod, url, requestType, logger)
         {
             _loggerFactory = loggerFactory;
             _passport = passport;
+            _body = body;
+            _extraHeaders = headers;
+            _clientId = clientId;
         }
 
         /// <summary>
@@ -34,7 +41,7 @@ namespace EP94.ThinqSharp.Models.Requests
             {
                 await RefreshOAuthToken(_passport);
             }
-            ThinqApiResponse<TResult>? response = await ExecuteRequestWithResponseAsync(false);
+            ThinqApiResponse<TResult>? response = await ExecuteRequestWithResponseAsync(_body, GetHeaders(_clientId, _passport, _extraHeaders), false);
             if (response is null)
             {
                 throw new ThinqApiException("Request received empty response");
@@ -42,16 +49,15 @@ namespace EP94.ThinqSharp.Models.Requests
             Logger.LogDebug("Received result code {ResultCode}", response.ResultCode);
             switch (response.ResultCode)
             {
-                case (int)ThinqResponseCodes.OK:
+                case ThinqResponseCode.OK:
                     return response.Result;
 
-                case (int)ThinqResponseCodes.EMP_AUTHENTICATION_FAILED when !failWhenAuthenticationFailed && _passport is not null:
-                    Logger.LogInformation("Received {CodeName} result code", nameof(ThinqResponseCodes.EMP_AUTHENTICATION_FAILED));
+                case ThinqResponseCode.EMP_AUTHENTICATION_FAILED when !failWhenAuthenticationFailed && _passport is not null:
                     await RefreshOAuthToken(_passport);
                     return await InternalExecuteThinqApiRequestWithResponseAsync(true);
 
                 default:
-                    throw new ThinqApiException($"Received error {(ThinqResponseCodes)response.ResultCode} code {response.ResultCode}", response.ResultCode);
+                    throw new ThinqApiException($"Received error {response.ResultCode} code {(int)response.ResultCode}", response.ResultCode);
             }
         }
 

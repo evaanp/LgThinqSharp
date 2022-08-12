@@ -12,8 +12,6 @@ namespace EP94.ThinqSharp
 {
     public sealed class ThinqClient : IDisposable
     {
-        private string? _username;
-        private string? _password;
         private Passport? _passport;
         private ILoggerFactory _loggerFactory;
         private ILogger<ThinqClient> _logger;
@@ -181,10 +179,14 @@ namespace EP94.ThinqSharp
 
         public void Dispose()
         {
-            if (_mqttClient is not null)
+            if (!_disposed)
             {
-                _mqttClient.OnStateChanged -= OnMqttClientStateChanged;
-                _mqttClient.Dispose();
+                if (_mqttClient is not null)
+                {
+                    _mqttClient.OnStateChanged -= OnMqttClientStateChanged;
+                    _mqttClient.Dispose();
+                }
+                _disposed = true;
             }
         }
     }
