@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EP94.ThinqSharp.Exceptions;
 using System.Linq.Expressions;
+using EP94.ThinqSharp.Interfaces;
 
 namespace EP94.ThinqSharp.Clients
 {
@@ -29,15 +30,11 @@ namespace EP94.ThinqSharp.Clients
         public Task SetSnapshotValue<T>(Expression<Func<AcSnapshot, T>> propertyLambda, T value, bool forceSend = false) => SetSnapshotValue<AcSnapshot, T>(propertyLambda, value, forceSend);
 
         /// <summary>
-        /// Send multiple values to the device
+        /// Build a command to send multiple values to the device
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="propertyLambda">The expression to define which value has to be set</param>
-        /// <param name="value">The value</param>
-        /// <param name="forceSend">Normally the value only gets send when the current value is not equal to the requested value. When forceSend is true, the value always gets send</param>
+        /// <param name="timeBetweenCalls"></param>
         /// <returns></returns>
-        /// 
-        public Task SetSnapshotvalues<T>(params (Expression<Func<AcSnapshot, T>> propertyLambda, T value, bool forceSend)[] values) => SetSnapshotValues(values);
+        public ICommandBuilder<AcSnapshot> SendMultipleValues(TimeSpan timeBetweenCalls) => SendMultipleValues<AcSnapshot>(timeBetweenCalls);
 
         /// <summary>
         /// Turn the ac on or off
