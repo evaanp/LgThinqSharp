@@ -14,6 +14,7 @@ namespace EP94.ThinqSharp.Clients
 {
     public class AcClient : DeviceClient
     {
+        public AcSnapshot AcSnapshot => (AcSnapshot)DeviceSnapshot;
         internal AcClient(string clientId, ILogger logger, ILoggerFactory loggerFactory, DeviceInfo deviceInfo, Passport passport, Gateway gateway, ThinqMqttClient thinqMqttClient) : base(clientId, logger, loggerFactory, deviceInfo, passport, gateway, thinqMqttClient, new AcSnapshot(deviceInfo.Snapshot))
         {
 
