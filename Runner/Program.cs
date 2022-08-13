@@ -38,6 +38,12 @@ foreach (DeviceClient deviceClient in deviceClients)
         await acClient.SetSnapshotValue(snapshot => snapshot.IsOn, true);
         // or
         await acClient.SetOnState(true);
+        // or send multiple values
+        await acClient.SendMultipleValues(TimeSpan.FromMilliseconds(100))
+            .Value(s => s.IsOn, true)
+            .Value(s => s.OperationMode, (double)AcMode.Cool)
+            .Value(s => s.FanSpeed, (double)AcFanSpeed.High)
+            .SendCommandsAsync();
     }
     deviceClient.OnDeviceSnapshotChanged += (sender, args) =>
     {
