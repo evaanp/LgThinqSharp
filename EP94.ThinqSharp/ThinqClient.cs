@@ -12,6 +12,8 @@ namespace EP94.ThinqSharp
 {
     public sealed class ThinqClient : IDisposable
     {
+        public event EventHandler<bool>? ConnectionStatusChanged;
+
         private Passport? _passport;
         private ILoggerFactory _loggerFactory;
         private ILogger<ThinqClient> _logger;
@@ -123,6 +125,7 @@ namespace EP94.ThinqSharp
 
                 // Reloading snapshot as the snapshot could be changed between the initial load and the attachment to the mqtt client
                 await deviceClient.ReloadSnapshotAsync();
+                deviceClient.HandleConnectionStatusChange(true);
             }
             _deviceClients = deviceClients;
             return deviceClients;
@@ -155,8 +158,29 @@ namespace EP94.ThinqSharp
             }
         }
 
+        /// <summary>
+        /// Reloads the connection with the thinq server
+        /// </summary>
+        /// <returns></returns>
+        public async Task ReloadAsync()
+        {
+            if (_mqttClient is not null)
+            {
+                await _mqttClient.DisconnectAsync();
+                await _mqttClient.ConnectAsync();
+            }
+        }
+
         private void OnMqttClientStateChanged(ThinqMqttClientState previousState, ThinqMqttClientState newState)
         {
+            ConnectionStatusChanged?.Invoke(this, newState == ThinqMqttClientState.Connected);
+            if (_deviceClients is not null)
+            {
+                foreach (DeviceClient deviceClient in _deviceClients)
+                {
+                    deviceClient.HandleConnectionStatusChange(newState == ThinqMqttClientState.Connected);
+                }
+            }
             if (previousState == ThinqMqttClientState.Disconnected && newState == ThinqMqttClientState.Connected && _deviceClients is not null)
             {
                 _logger.LogInformation("Reloading snapshots because the mqtt connection was restored");

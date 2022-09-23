@@ -8,6 +8,7 @@ using MQTTnet.Client;
 using MQTTnet.Packets;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto;
+using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -89,6 +90,7 @@ namespace EP94.ThinqSharp.Clients
             _logger.LogInformation("Disconnecting mqtt client");
             await _reconnectSemaphore.WaitAsync();
             await _client.DisconnectAsync();
+            _reconnectSemaphore.Release();
             _logger.LogInformation("Disconnected mqtt client");
         }
 
@@ -146,26 +148,31 @@ namespace EP94.ThinqSharp.Clients
 
         private async Task OnDisconnectAsync(MqttClientDisconnectedEventArgs args)
         {
+            if (_disposed) return;
             await _reconnectSemaphore.WaitAsync();
             switch (State)
             {
                 case ThinqMqttClientState.NotConnected:
                     _logger.LogError("Initial connection failed to mqtt broker {BrokerUri}", _brokerUri);
+                    _reconnectSemaphore.Release();
                     break;
 
                 case ThinqMqttClientState.Connected:
                     _logger.LogError("Disconnected from mqtt broker {BrokerUri}", _brokerUri);
+                    _reconnectSemaphore.Release();
                     break;
             }
             State = ThinqMqttClientState.Disconnected;
             if (_disconnectRequested)
             {
                 _logger.LogDebug("Stopped reconnecting because disconnect is requested");
+                _reconnectSemaphore.Release();
                 return;
             }
             if (_client is null || _options is null)
             {
                 _logger.LogError("Stopped reconnecting because the mqtt client became null");
+                _reconnectSemaphore.Release();
                 return;
             }
             try

@@ -49,6 +49,12 @@ namespace EP94.ThinqSharp.Clients
             DeviceInfo deviceInfo = await getDeviceInfoRequest.GetDeviceInfoAsync(false);
             DeviceSnapshot.Merge(deviceInfo.Snapshot);
         }
+
+        internal void HandleConnectionStatusChange(bool connected)
+        {
+            DeviceSnapshot.ClientConnected = connected;
+        }
+
         /// <summary>
         /// Send a value to the device
         /// </summary>

@@ -16,6 +16,12 @@ namespace EP94.ThinqSharp.Models
         [JsonIgnore]
         public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
 
+        [JsonIgnore]
+        public bool ValuesUpToDate => ClientConnected && (Online ?? false);
+
+        [JsonIgnore]
+        public bool ClientConnected { get; set; }
+
         [JsonProperty("airState.windStrength")]
         public double? FanSpeed { get; init; }
         [JsonProperty("airState.wMode.lowHeating")]
