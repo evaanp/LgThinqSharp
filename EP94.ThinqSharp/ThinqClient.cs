@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Globalization;
 using EP94.ThinqSharp.Exceptions;
+using Org.BouncyCastle.Security;
 
 namespace EP94.ThinqSharp
 {
@@ -167,8 +168,47 @@ namespace EP94.ThinqSharp
             if (_mqttClient is not null)
             {
                 await _mqttClient.DisconnectAsync();
+                Dictionary<DeviceClient, ManualResetEventSlim> resetEvents = new Dictionary<DeviceClient, ManualResetEventSlim>();
+                if (_deviceClients is not null)
+                {
+                    foreach (DeviceClient deviceClient in _deviceClients)
+                    {
+                        ManualResetEventSlim resetEvent = new ManualResetEventSlim();
+                        resetEvents[deviceClient] = resetEvent;
+                        deviceClient.OnDeviceSnapshotChanged += SetResetEvent;
+                    }
+                }
                 await _mqttClient.ConnectAsync();
+                if (_mqttClient.State == ThinqMqttClientState.Connected)
+                {
+                    await Task.Run(() =>
+                    {
+                        foreach (ManualResetEventSlim manualResetEventSlim in resetEvents.Values)
+                        {
+                            manualResetEventSlim.Wait(TimeSpan.FromSeconds(3));
+                        }
+                    });
+                }
+                if (_deviceClients is not null)
+                {
+                    foreach (DeviceClient deviceClient in _deviceClients)
+                    {
+                        deviceClient.OnDeviceSnapshotChanged -= SetResetEvent;
+                    }
+                }
+                foreach (ManualResetEventSlim resetEvent in resetEvents.Values)
+                {
+                    resetEvent.Dispose();
+                }
+                void SetResetEvent(object? sender, EventArgs eventArgs)
+                { 
+                    if (sender is DeviceClient deviceClient)
+                    {
+                        resetEvents[deviceClient].Set();
+                    }
+                }
             }
+
         }
 
         private void OnMqttClientStateChanged(ThinqMqttClientState previousState, ThinqMqttClientState newState)

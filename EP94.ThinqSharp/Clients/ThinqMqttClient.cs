@@ -80,7 +80,11 @@ namespace EP94.ThinqSharp.Clients
             _client.ConnectedAsync += OnConnectedAsync;
             _client.ApplicationMessageReceivedAsync += OnMessageReceivedAsync;
             _logger.LogInformation("Connecting to mqtt broker {BrokerUri}", _brokerUri);
-            _ = _client.ConnectAsync(_options);
+            try
+            {
+                await _client.ConnectAsync(_options);
+            }
+            catch { }
         }
 
         public async Task DisconnectAsync()
@@ -154,12 +158,10 @@ namespace EP94.ThinqSharp.Clients
             {
                 case ThinqMqttClientState.NotConnected:
                     _logger.LogError("Initial connection failed to mqtt broker {BrokerUri}", _brokerUri);
-                    _reconnectSemaphore.Release();
                     break;
 
                 case ThinqMqttClientState.Connected:
                     _logger.LogError("Disconnected from mqtt broker {BrokerUri}", _brokerUri);
-                    _reconnectSemaphore.Release();
                     break;
             }
             State = ThinqMqttClientState.Disconnected;
@@ -215,6 +217,7 @@ namespace EP94.ThinqSharp.Clients
             {
                 if (disposing)
                 {
+                    _reconnectSemaphore.Wait();
                     _certificate?.Dispose();
                     _client?.Dispose();
                     _reconnectSemaphore.Dispose();
