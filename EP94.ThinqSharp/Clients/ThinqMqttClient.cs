@@ -51,6 +51,8 @@ namespace EP94.ThinqSharp.Clients
         private int _reconnectTimeout = 1;
         private readonly string _clientId;
         private readonly Dictionary<string, ISnapshot> _attachedSnapshots;
+        private const int PingInterval = 30000;
+        private SemaphoreSlim _pingSemaphore;
 
         public ThinqMqttClient(Passport passport, Route route, Gateway gateway, ILoggerFactory loggerFactory, string clientId)
         {
@@ -63,6 +65,7 @@ namespace EP94.ThinqSharp.Clients
             _reconnectSemaphore = new SemaphoreSlim(1);
             _clientId = clientId;
             _attachedSnapshots = new Dictionary<string, ISnapshot>();
+            _pingSemaphore = new SemaphoreSlim(1);
         }
 
         public async Task ConnectAsync()
@@ -139,6 +142,7 @@ namespace EP94.ThinqSharp.Clients
             State = ThinqMqttClientState.Connected;
             _reconnectTimeout = 1;
             _logger.LogInformation("Connected to mqtt broker {BrokerUri}", _brokerUri);
+            _ = Task.Run(PingAsync);
             if (_topics is null || !_topics.Any())
             {
                 _logger.LogError("No topics to subscribe to!");
@@ -147,6 +151,33 @@ namespace EP94.ThinqSharp.Clients
             {
                 _logger.LogDebug("Subscribe to topic {Topic}", topic);
                 await _client.SubscribeAsync(new MqttTopicFilter() { Topic = topic });
+            }
+        }
+
+        private async Task PingAsync()
+        {
+            if (!await _pingSemaphore.WaitAsync(PingInterval))
+            {
+                _logger.LogDebug("Not starting a ping task, because one is already running");
+                return;
+            }
+            try
+            {
+                while (_client is not null && _client.IsConnected)
+                {
+                    _logger.LogDebug("Sending ping");
+                    await _client.PingAsync();
+                    await Task.Delay(PingInterval);
+                }
+                _logger.LogDebug("Ping stopped gracefully");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Ping stopped because of exception");
+            }
+            finally
+            {
+                _pingSemaphore.Release();
             }
         }
 
