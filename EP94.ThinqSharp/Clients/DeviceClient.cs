@@ -70,9 +70,17 @@ namespace EP94.ThinqSharp.Clients
             PropertyInfo propertyInfo = GetPropertyInfo(propertyLambda);
             JsonPropertyAttribute? jsonPropertyAttribute = propertyInfo.GetCustomAttribute<JsonPropertyAttribute>();
             string name = jsonPropertyAttribute?.PropertyName ?? propertyInfo.Name;
-            if (forceSend || !Equals(value, propertyLambda.Compile()((TSnapshot)DeviceSnapshot)))
+            var compiledLambda = propertyLambda.Compile();
+            if (forceSend || !Equals(value, compiledLambda((TSnapshot)DeviceSnapshot)))
             {
                 await SendCommand(name.Contains("operation") ? "Operation" : "Set", name, value);
+                await Task.Delay(500).ConfigureAwait(false);
+                T newValue = compiledLambda((TSnapshot)DeviceSnapshot);
+                if (!Equals(newValue, value))
+                {
+                    Logger.LogError("Reloading snapshot because the known value ({value}) isn't the same as the sent one ({sent})", newValue, value);
+                    await ReloadSnapshotAsync();
+                }
             }
             else
             {

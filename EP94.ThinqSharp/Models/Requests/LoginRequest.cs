@@ -50,7 +50,7 @@ namespace EP94.ThinqSharp.Models.Requests
                 { "user_auth2", preLoginResult.EncryptedPassword },
                 { "password_hash_prameter_flag", "Y" }, // "prameter" is intentional, it won't work without it
                 { "svc_list", "SVC202,SVC710" },
-                { "inactive_policy", "Y" }
+                { "inactive_policy", "N" }
             };
         }
 

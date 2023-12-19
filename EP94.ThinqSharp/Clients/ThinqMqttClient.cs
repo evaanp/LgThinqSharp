@@ -230,7 +230,7 @@ namespace EP94.ThinqSharp.Clients
                     {
                         UseTls = true,
                         AllowUntrustedCertificates = true,
-                        Certificates = new List<X509Certificate>() { certificate },
+                        ClientCertificatesProvider = new CertificateProvider(certificate),
                         CertificateValidationHandler = (c) =>
                         {
                             return true;
@@ -272,6 +272,20 @@ namespace EP94.ThinqSharp.Clients
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        private class CertificateProvider : IMqttClientCertificatesProvider
+        {
+            private X509CertificateCollection _certificates;
+            public CertificateProvider(X509Certificate x509Certificate)
+            {
+                _certificates = new X509CertificateCollection() { x509Certificate };
+            }
+
+            public X509CertificateCollection GetCertificates()
+            {
+                return _certificates;
+            }
         }
     }
 }
